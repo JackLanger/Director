@@ -1,3 +1,7 @@
+using Uno.Extensions;
+using Uno.Extensions.Authentication;
+using Uno.Extensions.Navigation;
+
 namespace Director.Presentation;
 
 public partial class LoginViewModel : ObservableObject {

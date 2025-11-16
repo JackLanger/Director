@@ -1,4 +1,6 @@
-﻿namespace Director.Presentation;
+﻿using Uno.Extensions.Hosting;
+
+namespace Director.Presentation;
 
 public sealed partial class Shell : UserControl, IContentControlProvider {
     public Shell()

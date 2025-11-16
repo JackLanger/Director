@@ -1,3 +1,10 @@
+using Director.Core;
+using Uno.Extensions;
+using Uno.Extensions.Authentication;
+using Uno.Extensions.Configuration;
+using Uno.Extensions.Hosting;
+using Uno.Extensions.Localization;
+using Uno.Extensions.Navigation;
 using Uno.Resizetizer;
 
 namespace Director;
@@ -73,6 +80,9 @@ public partial class App : Application {
                             }), name: "CustomAuth")
                 )
                 .ConfigureServices((context, services) => {
+
+                    services.AddSingleton<IRepositoryDataLoader, GithubRepositoryDataLoader>();
+
                     // TODO: Register your services
                     //services.AddSingleton<IMyService, MyService>();
                 })

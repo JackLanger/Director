@@ -1,3 +1,6 @@
+using Uno.Extensions.Authentication;
+using Uno.Extensions.Navigation;
+
 namespace Director.Presentation;
 
 public class ShellViewModel {

@@ -35,5 +35,8 @@
             SkiaRenderer;
         </UnoFeatures>
     </PropertyGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Director.Core\Director.Core.csproj" />
+    </ItemGroup>
 
 </Project>
