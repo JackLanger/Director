@@ -1,16 +1,17 @@
 <Project ToolsVersion="15.0">
-  <!--
-    To update the version of Uno, you should instead update the Sdk version in the global.json file.
-
-    See https://aka.platform.uno/using-uno-sdk for more information.
-    See https://aka.platform.uno/using-uno-sdk#implicit-packages for more information regarding the Implicit Packages.
-  -->
-  <ItemGroup>
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-    <PackageVersion Include="xunit" Version="2.9.3" />
-    <PackageVersion Include="xunit.core" Version="2.9.3" />
-    <PackageVersion Include="xunit.extensibility.core" Version="2.9.3" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4" />
-    <PackageVersion Include="coverlet.collector" Version="6.0.4" />
-  </ItemGroup>
+    <!--
+      To update the version of Uno, you should instead update the Sdk version in the global.json file.
+  
+      See https://aka.platform.uno/using-uno-sdk for more information.
+      See https://aka.platform.uno/using-uno-sdk#implicit-packages for more information regarding the Implicit Packages.
+    -->
+    <ItemGroup>
+        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1"/>
+        <PackageVersion Include="Uno.Extensions.Authentication" Version="7.0.4"/>
+        <PackageVersion Include="xunit" Version="2.9.3"/>
+        <PackageVersion Include="xunit.core" Version="2.9.3"/>
+        <PackageVersion Include="xunit.extensibility.core" Version="2.9.3"/>
+        <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4"/>
+        <PackageVersion Include="coverlet.collector" Version="6.0.4"/>
+    </ItemGroup>
 </Project>

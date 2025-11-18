@@ -1,29 +1,28 @@
 using Director.Core;
-using Uno.Extensions;
-using Uno.Extensions.Authentication;
-using Uno.Extensions.Configuration;
-using Uno.Extensions.Hosting;
-using Uno.Extensions.Localization;
-using Uno.Extensions.Navigation;
-using Uno.Resizetizer;
+using Director.Core.Data;
+using Director.Core.Model;
 
 namespace Director;
 
 public partial class App : Application {
+
+    private string? _username;
+
     /// <summary>
-    /// Initializes the singleton application object. This is the first line of authored code
-    /// executed, and as such is the logical equivalent of main() or WinMain().
+    ///     Initializes the singleton application object. This is the first line of authored code
+    ///     executed, and as such is the logical equivalent of main() or WinMain().
     /// </summary>
     public App()
     {
-        this.InitializeComponent();
+        InitializeComponent();
     }
 
     protected Window? MainWindow { get; private set; }
     protected IHost? Host { get; private set; }
 
-    protected async override void OnLaunched(LaunchActivatedEventArgs args)
+    protected override async void OnLaunched(LaunchActivatedEventArgs args)
     {
+
         var builder = this.CreateBuilder(args)
             // Add navigation support for toolkit controls such as TabBar and NavigationView
             .UseToolkitNavigation()
@@ -47,6 +46,7 @@ public partial class App : Application {
                                 if (credentials?.TryGetValue(nameof(LoginViewModel.Username), out var username) ?? false &&
                                     !username.IsNullOrEmpty())
                                 {
+                                    _username = username;
                                     // Return IDictionary containing any tokens used by service calls or in the app
                                     credentials ??= new Dictionary<string, string>();
                                     credentials[TokenCacheExtensions.AccessTokenKey] = "SampleToken";
@@ -77,7 +77,7 @@ public partial class App : Application {
 
                                 // Return null/default to fail the Refresh method
                                 return ValueTask.FromResult<IDictionary<string, string>?>(default);
-                            }), name: "CustomAuth")
+                            }), "CustomAuth")
                 )
                 .ConfigureServices((context, services) => {
 
@@ -88,6 +88,7 @@ public partial class App : Application {
                 })
                 .UseNavigation(RegisterRoutes)
             );
+
         MainWindow = builder.Window;
 
 #if DEBUG
@@ -96,16 +97,25 @@ public partial class App : Application {
         MainWindow.SetWindowIcon();
 
         Host = await builder.NavigateAsync<Shell>
-        (initialNavigate: async (services, navigator) => {
+        (async (services, navigator) => {
             var auth = services.GetRequiredService<IAuthenticationService>();
             var authenticated = await auth.RefreshAsync();
+
             if (authenticated)
             {
-                await navigator.NavigateViewModelAsync<MainViewModel>(this, qualifier: Qualifiers.Nested);
+                var dataLoader = services.GetRequiredService<IRepositoryDataLoader>();
+                var (repos, err) = await dataLoader.LoadRepositoriesAsync(_username ?? "octocat");
+
+                if (err != null)
+                {
+                    Console.WriteLine(err.GetReason());
+                }
+
+                await navigator.NavigateViewModelAsync<MainViewModel>(this, Qualifiers.Nested, repos);
             }
             else
             {
-                await navigator.NavigateViewModelAsync<LoginViewModel>(this, qualifier: Qualifiers.Nested);
+                await navigator.NavigateViewModelAsync<LoginViewModel>(this, Qualifiers.Nested);
             }
         });
     }
@@ -115,17 +125,17 @@ public partial class App : Application {
         views.Register(
         new ViewMap(ViewModel: typeof(ShellViewModel)),
         new ViewMap<LoginPage, LoginViewModel>(),
-        new ViewMap<MainPage, MainViewModel>(),
-        new DataViewMap<SecondPage, SecondViewModel, Entity>()
+        new DataViewMap<MainPage, MainViewModel, IList<Repository>>(),
+        new DataViewMap<SecondPage, SecondViewModel, Repository>()
         );
 
         routes.Register(
-        new RouteMap("", View: views.FindByViewModel<ShellViewModel>(),
+        new RouteMap("", views.FindByViewModel<ShellViewModel>(),
         Nested:
         [
-            new("Login", View: views.FindByViewModel<LoginViewModel>()),
-            new("Main", View: views.FindByViewModel<MainViewModel>(), IsDefault: true),
-            new("Second", View: views.FindByViewModel<SecondViewModel>()),
+            new RouteMap("Login", views.FindByViewModel<LoginViewModel>()),
+            new RouteMap("Main", views.FindByViewModel<MainViewModel>(), true),
+            new RouteMap("Second", views.FindByViewModel<SecondViewModel>())
         ]
         )
         );

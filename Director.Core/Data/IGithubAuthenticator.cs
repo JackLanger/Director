@@ -1,6 +1,6 @@
-namespace Director.Core;
+namespace Director.Core.Data;
 
-public interface IGithubAuthenticator {
-    string Token { get;  }
+public interface IGithubAuthenticator : IAuthenticationService {
+    string Token { get; }
     string Authenticate(string user);
 }

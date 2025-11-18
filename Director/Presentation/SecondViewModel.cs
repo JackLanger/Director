@@ -1,4 +1,6 @@
+using Director.Core.Model;
+
 namespace Director.Presentation;
 
-public partial record SecondViewModel(Entity Entity) {
+public record SecondViewModel(Repository repository) {
 }
